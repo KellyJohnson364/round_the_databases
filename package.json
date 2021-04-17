@@ -1,0 +1,25 @@
+{
+  "name": "round_the_databases",
+  "version": "1.0.0",
+  "description": "",
+  "main": "const mysql = require('mysql');.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KellyJohnson364/round_the_databases.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KellyJohnson364/round_the_databases/issues"
+  },
+  "homepage": "https://github.com/KellyJohnson364/round_the_databases#readme",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "dotenv": "^8.2.0",
+    "inquirer": "^8.0.0",
+    "mysql": "^2.18.1"
+  }
+}
