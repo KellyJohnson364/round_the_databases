@@ -16,7 +16,7 @@
       Invoke npm start while in the directory with the repository for this app. The prompts will direct the user and display tables and alert the user to actions that are performed successfully.  Below is a screenshot of the app with an added manager column which was missing in the video that follows.
 
 
-![Screenshot 1 of site](./assets/images/screenshot-1.png)
+![Screenshot 1 of site](./images/screenshot-1.png)
 
 
 View this [video](https://drive.google.com/file/d/1aVz3GZmt56rFoak56RycLBQXNnFBxXli/view) as an example. 
