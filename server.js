@@ -1,8 +1,10 @@
+//Dependencies
 let mysql = require('mysql');
 let inquirer = require('inquirer');
 require('dotenv').config();
 let cTable = require('console.table');
 
+//Connect to databse while hiding password in .env file
 let connection = mysql.createConnection({
   host: 'localhost',
   port: 3306,
@@ -16,6 +18,7 @@ connection.connect((err) => {
   init();
 });
 
+//Begin with action prompt with switch case
 let init = () => {
   inquirer
     .prompt({
@@ -67,6 +70,8 @@ let init = () => {
     });
       
 };
+
+// Add new employees to the database
 let mgrs =[]
 let roles = []
 let addEmployee = () => {
@@ -134,6 +139,7 @@ let addEmployee = () => {
 })        
 }
 
+//Add a new role to the postition table
 let addRole = () => {
   
   inquirer.prompt([
@@ -183,6 +189,8 @@ let addRole = () => {
 })
 })
 }
+
+//Delete an employee 
  let deleteEmployee = () =>  {
     let query =
       `SELECT * FROM employee`;
@@ -212,8 +220,8 @@ let addRole = () => {
   
 }
 
+//Update an employee's role
   let people = []
-  
   let updateEmployee = () =>  {
     let query =
           `SELECT * FROM employee`;
@@ -274,6 +282,8 @@ let addRole = () => {
         }) 
                    
   }
+
+//View all the employees and sort tables by department
   let values = []
   let allView = () =>  {
     let query =
@@ -290,6 +300,8 @@ let addRole = () => {
               values = []                
     })       
   } 
+
+  //View employee info by roles
   let positions = []
   let positionView = () =>  {
     let query =
@@ -322,6 +334,7 @@ let addRole = () => {
       })        
   }
   
+  // View employee info by department
   let departments = []
   let departmentView = () =>  {
     let query =
