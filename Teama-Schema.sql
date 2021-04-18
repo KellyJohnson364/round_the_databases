@@ -27,7 +27,7 @@ INSERT INTO department (id, department_name)
 VALUES (1, "sales"), (2, "accounting"), (3, "engineering"), (4, "legal");
 
 INSERT INTO position (id, title, salary, department_id)
-VALUES (1, "sales manager", 100000, 1), (2, "Accounting Manager", 100000, 2), (3, "Eng. Manager", 100000, 3), (4, "salesman", 60000, 2), (5, "accountant", 600000, 2), (6, "engineer", 130000, 3), (7, "lawyer", 130000, 4);
+VALUES (1, "sales manager", 100000, 1), (2, "Accounting Manager", 100000, 2), (3, "Eng. Manager", 100000, 3), (4, "salesman", 60000, 1), (5, "accountant", 600000, 2), (6, "engineer", 130000, 3), (7, "lawyer", 130000, 4);
 
 INSERT INTO employee (first_name, last_name, position_id, manager_id)
 VALUES ("Steve", "Mcdichael", 4, 1), ("Onson", "Sweemay", 5, 2), ("Darryl", "Archideld", 6, 3), ("Anatoli", "Smorin", 4, 1),
