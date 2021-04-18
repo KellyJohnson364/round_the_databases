@@ -4,29 +4,38 @@ CREATE database staff_DB;
 USE staff_DB;
 
 CREATE TABLE employee (
-  id INT PRIMARY KEY AUTO_INCREMENT, 
+  employee_id INT PRIMARY KEY AUTO_INCREMENT, 
   first_name VARCHAR (30), 
   last_name VARCHAR (30),
   position_id INT,
   manager_id  INT
 );
 
+CREATE TABLE manager (
+  manager_id INT PRIMARY KEY, 
+  manager_name VARCHAR (30),
+  department_id INT
+);
+
 CREATE TABLE department (
-  id INT PRIMARY KEY,
+  department_id INT PRIMARY KEY,
   department_name VARCHAR (30)
 );
 
 CREATE TABLE position (
-  id INT PRIMARY KEY,
+  position_id INT PRIMARY KEY,
   title VARCHAR (30),
   salary DECIMAL,
   department_id INT
 );
 
-INSERT INTO department (id, department_name)
+INSERT INTO manager (manager_id, manager_name, department_id)
+VALUES (1, "Mike Truck", 1), (2, "Dwigt Rortugal", 2), (3, "Tim Sandaele", 3);
+
+INSERT INTO department (department_id, department_name)
 VALUES (1, "sales"), (2, "accounting"), (3, "engineering"), (4, "legal");
 
-INSERT INTO position (id, title, salary, department_id)
+INSERT INTO position (position_id, title, salary, department_id)
 VALUES (1, "sales manager", 100000, 1), (2, "Accounting Manager", 100000, 2), (3, "Eng. Manager", 100000, 3), (4, "salesman", 60000, 1), (5, "accountant", 600000, 2), (6, "engineer", 130000, 3), (7, "lawyer", 130000, 4);
 
 INSERT INTO employee (first_name, last_name, position_id, manager_id)
@@ -39,3 +48,4 @@ VALUES ("Steve", "Mcdichael", 4, 1), ("Onson", "Sweemay", 5, 2), ("Darryl", "Arc
 SELECT * FROM employee;
 SELECT * FROM position;
 SELECT * FROM department;
+SELECT * FROM manager;

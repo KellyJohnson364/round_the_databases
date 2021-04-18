@@ -1,9 +1,9 @@
-const mysql = require('mysql');
-const inquirer = require('inquirer');
+let mysql = require('mysql');
+let inquirer = require('inquirer');
 require('dotenv').config();
-const cTable = require('console.table');
+let cTable = require('console.table');
 
-const connection = mysql.createConnection({
+let connection = mysql.createConnection({
   host: 'localhost',
   port: 3306,
   user: 'root',
@@ -16,7 +16,7 @@ connection.connect((err) => {
   init();
 });
 
-const init = () => {
+let init = () => {
   inquirer
     .prompt({
       name: 'action',
@@ -27,9 +27,10 @@ const init = () => {
         'View employees by department',
         'View employees by role', 
         'Add employee',
+        'Add new role',
         'Remove employee',
         'Update employee Role', 
-        'Update employee manager' 
+         
       ],
     })
     .then((answer) => {
@@ -50,6 +51,10 @@ const init = () => {
           addEmployee();
           break;
 
+        case 'Add new role':
+          addRole();
+          break;  
+
         case 'Remove employee':
           deleteEmployee();
           break; 
@@ -57,18 +62,129 @@ const init = () => {
         case 'Update employee Role':
           updateEmployee();
           break;
-
-        case 'Update employee manager':
-          deleteEmployee();
-          break;      
           
       }
     });
       
 };
+let mgrs =[]
+let roles = []
+let addEmployee = () => {
+  let  query = 
+      `SELECT * FROM position`;
+         connection.query(query, (err, res) => {
+           res.forEach(({ title }) => {
+           roles.push (title) 
+           })
+          }) 
+  let query2 =
+      `SELECT manager_name FROM manager`
+         connection.query(query2, (err, res) => {
+          res.forEach(({ manager_name }) => {
+          mgrs.push (manager_name) 
+         }) 
+        })                           
+   inquirer.prompt([
+    {
+    name: 'first_name',
+    type: 'input',
+    message: "What is the employee's first name ",
+  },
+  {
+    name: 'last_name',
+    type: 'input',
+    message: "What is the employee's last name?",
+  },
+  {
+    name: 'role',
+    type: 'rawlist',
+    message: "What is the employee's role id",
+    choices: roles
+  },
+  {
+    name: 'manager',
+    type: 'rawlist',
+    message: "What is the employee's manager id?",
+    choices: mgrs
+  }
+]).then((answer) => {
+  let query =
+    'SELECT * FROM position INNER JOIN manager ON (position.department_id = manager.department_id) WHERE (position.title  = ?)';
+    connection.query(query, [answer.role], (err, res) => { 
+     
+      res.forEach(({ position_id, manager_id }) => {
+        connection.query(
+          'INSERT INTO employee SET ?',
+          {
+            first_name: answer.first_name,
+            last_name: answer.last_name,
+            'position_id': position_id,
+            'manager_id': manager_id,
+          },
+          (err) => {
+            if (err) throw err;
+            console.log('Your employee was added successfully!');
+            mgrs =[]
+            roles = []
+            init();
+          }
+        );
+      })
+    })  
+})        
+}
 
- const deleteEmployee = () =>  {
-    const query =
+let addRole = () => {
+  
+  inquirer.prompt([
+    {
+    name: 'new_position',
+    type: 'input',
+    message: "What is the new role title ",
+  },
+  {
+    name: 'position_department',
+    type: 'input',
+    message: "What department is the new role in?",
+  },
+  {
+    name: 'position_salary',
+    type: 'input',
+    message: "What is the new salary?",
+  },
+]).then((answer) => {
+  let query =
+  `SELECT * FROM position`;
+  connection.query(query, (err, res) => { 
+  let ids = (res.length +1);
+  console.log(ids)
+  let query2 =
+`SELECT * FROM department WHERE (department.department_name  = ?)`;
+  connection.query(query2, [answer.position_department], (err, res) => { 
+    res.forEach(({ department_id }) => {
+      connection.query(
+    'INSERT INTO position SET ?',
+    {
+      position_id: ids ,
+      title: answer.new_position,
+      salary: answer.position_salary,
+      'department_id': department_id,
+      
+    },
+    (err) => {
+      if (err) throw err;
+      console.log('Your role was added successfully!');
+      mgrs =[]
+      roles = []
+      init();
+    }
+  )})
+})
+})
+})
+}
+ let deleteEmployee = () =>  {
+    let query =
       `SELECT * FROM employee`;
          connection.query(query, (err, res) => {
            res.forEach(({ last_name }) => {
@@ -89,23 +205,23 @@ const init = () => {
                   if (err) throw err;
                   console.log(`${answer.delete} deleted!\n`);
                   init();
-                }
-                       )
+                  people = []
+                })
             })
   })
   
 }
 
   let people = []
-  let roles = []
-  const updateEmployee = () =>  {
-    const query =
+  
+  let updateEmployee = () =>  {
+    let query =
           `SELECT * FROM employee`;
             connection.query(query, (err, res) => {
               res.forEach(({ last_name }) => {
                people.push (last_name) 
               })
-            const query2 =
+    let query2 =
           `SELECT title FROM position`
             connection.query(query2, (err, res) => {
             res.forEach(({ title }) => {
@@ -126,15 +242,15 @@ const init = () => {
               choices: roles
             }
           ]).then((answer) => {
-            const query =
-          `SELECT id FROM position WHERE (position.title  = ?)`;
+            let query =
+          `SELECT position_id FROM position WHERE (position.title  = ?)`;
             connection.query(query, [answer.update], (err, res) => { 
-            res.forEach(({ id }) => {
-              const query = connection.query(
+            res.forEach(({ position_id }) => {
+              let query = connection.query(
                 'UPDATE employee SET ? WHERE ?',
                 [
                   {
-                    position_id: id,
+                    'position_id': position_id,
                   },
                   {
                     last_name: answer.who,
@@ -159,22 +275,24 @@ const init = () => {
                    
   }
   let values = []
-  const allView = () =>  {
+  let allView = () =>  {
     let query =
-    'SELECT * FROM employee INNER JOIN position ON (employee.position_id = position.id) INNER JOIN department ON (department.id = position.department_id)';
+    'SELECT * FROM employee INNER JOIN position ON (employee.position_id = position.position_id) INNER JOIN department ON (department.department_id';
+    query +=
+    '= position.department_id) INNER JOIN manager ON (employee.manager_id = manager.manager_id) ORDER BY department_name';
       connection.query(query, (err, res) => {
-           res.forEach(({ first_name, last_name, department_name, title, salary }, i) => {
-            const num = i + 1;
-            values.push ([num, first_name, last_name, department_name, title, salary]); 
+           res.forEach(({ first_name, last_name, department_name, title, salary, manager_name }, i) => {
+            let num = i + 1;
+            values.push ([num, first_name, last_name, department_name, title, salary, manager_name]); 
             });
-              console.table(['ID', 'Name','' ,'Department', 'Role', 'Salary'], values) 
+              console.table(['#', 'Name','' ,'Department', 'Role', 'Salary', 'Manager'], values) 
               init();
               values = []                
     })       
   } 
   let positions = []
-  const positionView = () =>  {
-    const query =
+  let positionView = () =>  {
+    let query =
       `SELECT * FROM position`;
         connection.query(query, (err, res) => {
          res.forEach(({ title }) => {
@@ -188,13 +306,13 @@ const init = () => {
                choices: positions
                }).then((answer) => {
                 let query =
-                 'SELECT * FROM employee INNER JOIN position ON (employee.position_id = position.id) INNER JOIN department ON (department.id = position.department_id)  WHERE (position.title  = ?)';
+                 'SELECT * FROM employee INNER JOIN position ON (employee.position_id = position.position_id) INNER JOIN department ON (department.department_id = position.department_id)  WHERE (position.title  = ?)';
                  connection.query(query, [answer.see], (err, res) => {
                   res.forEach(({ first_name, last_name, department_name, title, salary }, i) => {
-                    const num = i + 1;
+                    let num = i + 1;
                     values.push ([num, first_name, last_name, department_name, title, salary]); 
                   });
-                    console.table(['ID', 'Name','' ,'Department', 'Role', 'Salary'], values) 
+                    console.table(['#', 'Name','' ,'Department', 'Role', 'Salary'], values) 
                     init(); 
                     values = [] 
                     positions = []             
@@ -205,8 +323,8 @@ const init = () => {
   }
   
   let departments = []
-  const departmentView = () =>  {
-    const query =
+  let departmentView = () =>  {
+    let query =
           `SELECT * FROM department`;
             connection.query(query, (err, res) => {
               res.forEach(({ department_name }) => {
@@ -220,13 +338,13 @@ const init = () => {
                     choices: departments
                   }).then((answer) => {
                     let query =
-                      'SELECT * FROM employee INNER JOIN position ON (employee.position_id = position.id) INNER JOIN department ON (department.id = position.department_id)  WHERE (department.department_name  = ?)';
+                      'SELECT * FROM employee INNER JOIN position ON (employee.position_id = position.position_id) INNER JOIN department ON (department.department_id = position.department_id)  WHERE (department.department_name  = ?)';
                       connection.query(query, [answer.see], (err, res) => {
                         res.forEach(({ first_name, last_name, department_name, title, salary }, i) => {
-                          const num = i + 1;
+                          let num = i + 1;
                           values.push ([num, first_name, last_name, department_name, title, salary]); 
                         });
-                          console.table(['ID', 'Name','' ,'Department', 'Role', 'Salary'], values) 
+                          console.table(['#', 'Name','' ,'Department', 'Role', 'Salary'], values) 
                          
                           init();                 
                           values = []
